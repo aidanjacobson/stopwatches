@@ -7,10 +7,7 @@
 
 var config = {
     saved: true,
-    watches: [{
-        timestamp: 1661326647593,
-        label: ""
-    }]
+    watches: []
 };
 
 function isConfigSaved() {
