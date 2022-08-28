@@ -16,6 +16,7 @@ function isConfigSaved() {
 
 function saveConfig() {
     localStorage.setItem("config", JSON.stringify(config));
+    pushToServer();
     renderStopwatches();
 }
 
@@ -106,4 +107,15 @@ function setTime(i) {
     var inputs = input.split(":");
     var millis = (+inputs[0])*1000*60*60 + (+inputs[1])*1000*60 + (+inputs[2])*1000;
     config.watches[i].timestamp = Date.now()-millis;
+}
+
+function pushToServer() {
+    var value = "";
+    if (config.watches.length > 0) {
+        value = config.watches[0].timestamp;
+    }
+    fetch(`https://aidanjacobson.duckdns.org/api/webhook/sync-edible-rKBtuH6aeb2JWqjhxUz4Ef5a?value=${value}`, {
+        method:"POST",
+        mode: "no-cors"
+    });
 }
