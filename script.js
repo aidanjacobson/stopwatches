@@ -14,38 +14,13 @@ var config = {
     config = JSON.parse(localStorage.getItem("config"));
 }*/
 
-var encrypted_access_token = "U2FsdGVkX1+BS7W57qcuksbGeOhMELdKhPGdFruceXcLa74zjeuaGq1ELrfEpq+GjaeCRQiAA2OaUJY0rfXil0NB/VlMeqHNTxo69hBYu3eQcGHhKSrQGY0hn6obMS3w5nagv1Q+kM6OcoRjewNBgAvEK97AcVapxiusHjPlbpUEfllwb5TgiznJouFPYaUj3hwKq6Km3vVy+cbTIoZxMryMuEPXcvAybrhwrJtsidyWy0Z7VWyDg949CULWnaseJtPR+EGMaOtAP5tXwmmV6A==";
-var access_token = "";
-
-function retrieveConfig() {
-    return new Promise(function(resolve) {
-        var url = `https://aidanjacobson.duckdns.org/api/states/input_text.stopwatch_json`;
-        var xhr = new XMLHttpRequest();
-        xhr.crossorigin
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Authorization", `Bearer ${access_token}`);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = function() {
-            resolve(JSON.parse(JSON.parse(xhr.responseText).state));
-        }
-        xhr.send();
-    })
-}
-
 function clearStorage() {
     localStorage.clear();
 }
 
 var display;
 async function main() {
-    if (localStorage.dkey) {
-        access_token = CryptoJS.AES.decrypt(encrypted_access_token, localStorage.dkey).toString(CryptoJS.enc.Utf8);
-        if (access_token == "") {
-            promptForPassword();
-        }
-    } else {
-        promptForPassword();
-    }
+    doAccessCheck();
     display = document.getElementById("display");
     config = await retrieveConfig();
     if (location.hash == "#start") {
@@ -64,7 +39,7 @@ function startNewStopwatch() {
         timestamp: Date.now(),
         label: ""
     });
-    saveConfig();
+    saveConfig(config);
     window.scrollTo(0, document.body.scrollHeight)
 }
 
@@ -105,13 +80,13 @@ function addLabel(i) {
     var input = prompt("Enter Label", config.watches[i].label || "");
     if (!input) return;
     config.watches[i].label = input;
-    saveConfig();
+    saveConfig(config);
 }
 
 function deleteWatch(i) {
     if (!confirm(`Are you sure you want to delete stopwatch ${config.watches[i].label}?`)) return;
     config.watches.splice(i, 1);
-    saveConfig();
+    saveConfig(config);
 }
 
 function setTime(i) {
@@ -120,21 +95,5 @@ function setTime(i) {
     var inputs = input.split(":");
     var millis = (+inputs[0])*1000*60*60 + (+inputs[1])*1000*60 + (+inputs[2])*1000;
     config.watches[i].timestamp = Date.now()-millis;
-    saveConfig();
-}
-
-function saveConfig() {
-    var url = `https://aidanjacobson.duckdns.org/api/states/input_text.stopwatch_json`;
-    var xhr = new XMLHttpRequest();
-    xhr.crossorigin
-    xhr.open("POST", url);
-    xhr.setRequestHeader("Authorization", `Bearer ${access_token}`);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify({state: JSON.stringify(config)}));
-    renderStopwatches();
-}
-
-function promptForPassword() {
-    localStorage.dkey = prompt("Please Enter Decryption Key");
-    location.reload();
+    saveConfig(config);
 }
