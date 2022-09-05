@@ -31,7 +31,6 @@ function retrieveConfig() {
     return new Promise(function(resolve) {
         var url = `https://aidanjacobson.duckdns.org/api/states/input_text.stopwatch_json`;
         var xhr = new XMLHttpRequest();
-        xhr.crossorigin
         xhr.open("GET", url);
         xhr.setRequestHeader("Authorization", `Bearer ${access_token}`);
         xhr.setRequestHeader("Content-Type", "application/json");
