@@ -136,5 +136,5 @@ function saveConfig() {
 
 function promptForPassword() {
     localStorage.dkey = prompt("Please Enter Decryption Key");
-    window.reload();
+    location.reload();
 }
