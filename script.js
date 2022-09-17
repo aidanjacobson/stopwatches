@@ -7,7 +7,8 @@
 
 var config = {
     saved: true,
-    watches: []
+    watches: [],
+    tracked: -1
 };
 
 /*function retrieveConfig() {
@@ -23,6 +24,7 @@ async function main() {
     doAccessCheck();
     display = document.getElementById("display");
     config = await retrieveConfig();
+    if (typeof config.tracked === "undefined") config.tracked = -1;
     if (location.hash == "#start") {
         location.hash = "";
         startNewStopwatch();
@@ -39,6 +41,7 @@ function startNewStopwatch() {
         timestamp: Date.now(),
         label: ""
     });
+    if (config.watches.length == 1) config.tracked = 0;
     saveConfig(config);
     window.scrollTo(0, document.body.scrollHeight)
 }
@@ -49,7 +52,7 @@ function renderStopwatches() {
         display.innerHTML += `
             <div class="stopwatch">
                 <h1 onclick='setTime(${i})'></h1>
-                <span><button class='labelBtn' onclick='addLabel(${i})'>Add Label</button></span> (<u class='deleteBtn' onclick='deleteWatch(${i})'>Delete</u>)
+                <input type="radio" onclick="updateTracked()" name="tracked" class="trackbtn" value="${i}" /><span><button class='labelBtn' onclick='addLabel(${i})'>Add Label</button></span> (<u class='deleteBtn' onclick='deleteWatch(${i})'>Delete</u>)
             </div>
         `;
     }
@@ -60,9 +63,9 @@ function updateStopwatches() {
     els.forEach(function(el, i) {
         el.children[0].innerText = formatTime(config.watches[i].timestamp);
         if (config.watches[i].label != "") {
-            el.children[1].children[0].innerHTML = config.watches[i].label;
-            el.children[1].children[0].onclick
+            el.children[2].children[0].innerHTML = config.watches[i].label;
         }
+        el.children[1].checked = (i == config.tracked);
     });
 }
 
@@ -86,6 +89,9 @@ function addLabel(i) {
 function deleteWatch(i) {
     if (!confirm(`Are you sure you want to delete stopwatch ${config.watches[i].label}?`)) return;
     config.watches.splice(i, 1);
+    if (config.tracked == i) config.tracked = -1;
+    if (i < config.tracked) config.tracked--;
+    if (config.watches.length == 0) config.tracked = -1;
     saveConfig(config);
 }
 
@@ -95,5 +101,14 @@ function setTime(i) {
     var inputs = input.split(":");
     var millis = (+inputs[0])*1000*60*60 + (+inputs[1])*1000*60 + (+inputs[2])*1000;
     config.watches[i].timestamp = Date.now()-millis;
+    saveConfig(config);
+}
+
+function updateTracked() {
+    if (document.querySelector("input[name='tracked']:checked")) {
+        config.tracked = +document.querySelector("input[name='tracked']:checked").value
+    } else {
+        config.tracked = -1;
+    }
     saveConfig(config);
 }
