@@ -149,9 +149,15 @@ function processAdminCommand() {
     var cmd = prompt("Enter Command");
     if (cmd[0] == "r") reorder(cmd.substring(1));
     if (cmd[0] == "d") deselect();
+    if (cmd[0] == "l") logout();
 }
 
 function deselect() {
     document.querySelector("input[name='tracked']:checked").checked = false;
     saveConfig();
+}
+
+function logout() {
+    localStorage.removeItem("dkey");
+    location.reload();
 }
