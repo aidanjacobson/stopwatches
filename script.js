@@ -37,6 +37,11 @@ async function main() {
 window.addEventListener("load", main);
 
 function startNewStopwatch() {
+    if (getSelection().toString() != '') {
+        var cmd = prompt("Enter Command");
+        if (cmd[0] == "r") reorder(cmd.substring(1));
+        return;
+    }
     config.watches.push({
         timestamp: Date.now(),
         label: ""
@@ -113,22 +118,11 @@ function updateTracked() {
     saveConfig();
 }
 
-window.ontouchmove = function(e) {
-    if (e.touches.length == 2) {
-        reorder();
-    }
-}
-
-window.ondblclick = function() {
-    reorder();
-}
-
-function reorder() {
+function reorder(reorderCode) {
     /*
         m1,3 => moves 1 to 3 position (shift)
         s1,3 => swaps 1 and 3 position
     */
-    var reorderCode = prompt("Enter reorder code");
     
     var reorderLetter = reorderCode[0];
     var arg1 = +reorderCode.substring(1, reorderCode.indexOf(","));
