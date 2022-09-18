@@ -154,7 +154,7 @@ function processAdminCommand() {
 
 function deselect() {
     document.querySelector("input[name='tracked']:checked").checked = false;
-    saveConfig();
+    updateTracked();
 }
 
 function logout() {
