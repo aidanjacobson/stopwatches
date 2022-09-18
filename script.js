@@ -38,8 +38,7 @@ window.addEventListener("load", main);
 
 function startNewStopwatch() {
     if (getSelection().toString() != '') {
-        var cmd = prompt("Enter Command");
-        if (cmd[0] == "r") reorder(cmd.substring(1));
+        processAdminCommand();
         return;
     }
     config.watches.push({
@@ -86,7 +85,6 @@ function formatTime(timestamp) {
 
 function addLabel(i) {
     var input = prompt("Enter Label", config.watches[i].label || "");
-    if (!input) return;
     config.watches[i].label = input;
     saveConfig();
 }
@@ -123,7 +121,6 @@ function reorder(reorderCode) {
         m1,3 => moves 1 to 3 position (shift)
         s1,3 => swaps 1 and 3 position
     */
-    
     var reorderLetter = reorderCode[0];
     var arg1 = +reorderCode.substring(1, reorderCode.indexOf(","));
     var arg2 = +reorderCode.substring(reorderCode.indexOf(",")+1, reorderCode.length);
@@ -145,5 +142,16 @@ function reorder(reorderCode) {
     } else {
         alert("invalid code");
     }
+    saveConfig();
+}
+
+function processAdminCommand() {
+    var cmd = prompt("Enter Command");
+    if (cmd[0] == "r") reorder(cmd.substring(1));
+    if (cmd[0] == "d") deselect();
+}
+
+function deselect() {
+    document.querySelector("input[name='tracked']:checked").checked = false;
     saveConfig();
 }
