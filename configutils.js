@@ -1,4 +1,4 @@
-function saveConfig(config) {
+function saveConfig() {
     var url = `https://aidanjacobson.duckdns.org/api/states/input_text.stopwatch_json`;
     var xhr = new XMLHttpRequest();
     xhr.open("POST", url);

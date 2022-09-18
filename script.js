@@ -42,7 +42,7 @@ function startNewStopwatch() {
         label: ""
     });
     if (config.watches.length == 1) config.tracked = 0;
-    saveConfig(config);
+    saveConfig();
     window.scrollTo(0, document.body.scrollHeight)
 }
 
@@ -52,7 +52,7 @@ function renderStopwatches() {
         display.innerHTML += `
             <div class="stopwatch">
                 <h1 onclick='setTime(${i})'></h1>
-                <input type="radio" onclick="updateTracked()" name="tracked" class="trackbtn" value="${i}" /><span><button class='labelBtn' onclick='addLabel(${i})'>Add Label</button></span> (<u class='deleteBtn' onclick='deleteWatch(${i})'>Delete</u>)
+                <input type="radio" onclick="updateTracked()" name="tracked" class="trackbtn" value="${i}" /><span><button class='labelBtn' onclick='addLabel(${i})'>Add Label</button></span> <u class='deleteBtn' onclick='deleteWatch(${i})'>Delete</u>
             </div>
         `;
     }
@@ -83,7 +83,7 @@ function addLabel(i) {
     var input = prompt("Enter Label", config.watches[i].label || "");
     if (!input) return;
     config.watches[i].label = input;
-    saveConfig(config);
+    saveConfig();
 }
 
 function deleteWatch(i) {
@@ -92,7 +92,7 @@ function deleteWatch(i) {
     if (config.tracked == i) config.tracked = -1;
     if (i < config.tracked) config.tracked--;
     if (config.watches.length == 0) config.tracked = -1;
-    saveConfig(config);
+    saveConfig();
 }
 
 function setTime(i) {
@@ -101,7 +101,7 @@ function setTime(i) {
     var inputs = input.split(":");
     var millis = (+inputs[0])*1000*60*60 + (+inputs[1])*1000*60 + (+inputs[2])*1000;
     config.watches[i].timestamp = Date.now()-millis;
-    saveConfig(config);
+    saveConfig();
 }
 
 function updateTracked() {
@@ -110,5 +110,46 @@ function updateTracked() {
     } else {
         config.tracked = -1;
     }
-    saveConfig(config);
+    saveConfig();
+}
+
+window.ontouchmove = function(e) {
+    if (e.touches.length == 2) {
+        reorder();
+    }
+}
+
+window.ondblclick = function() {
+    reorder();
+}
+
+function reorder() {
+    /*
+        m1,3 => moves 1 to 3 position (shift)
+        s1,3 => swaps 1 and 3 position
+    */
+    var reorderCode = prompt("Enter reorder code");
+    
+    var reorderLetter = reorderCode[0];
+    var arg1 = +reorderCode.substring(1, reorderCode.indexOf(","));
+    var arg2 = +reorderCode.substring(reorderCode.indexOf(",")+1, reorderCode.length);
+    if (reorderLetter == "s") {
+        var w1 = config.watches[arg1];
+        var w2 = config.watches[arg2];
+        config.watches[arg1] = w2;
+        config.watches[arg2] = w1;
+        if (config.tracked == arg1) {
+            config.tracked = arg2;
+        } else if (config.tracked == arg2) {
+            config.tracked = arg1;
+        }
+    } else if (reorderLetter == "m") {
+        var watch = config.watches.splice(arg1, 1)[0];
+        config.watches.splice(arg2, 0, watch);
+        if (config.tracked <= arg2 && config.tracked > arg1) config.tracked--;
+        if (config.tracked == arg1) config.tracked = arg2;
+    } else {
+        alert("invalid code");
+    }
+    saveConfig();
 }
