@@ -1,5 +1,5 @@
 function saveConfig() {
-    var url = `https://aidanjacobson.duckdns.org/api/states/input_text.stopwatch_json`;
+    var url = `https://aidanjacobson.duckdns.org:8123/api/states/input_text.stopwatch_json`;
     var xhr = new XMLHttpRequest();
     xhr.open("POST", url);
     xhr.setRequestHeader("Authorization", `Bearer ${access_token}`);
