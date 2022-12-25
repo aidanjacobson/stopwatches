@@ -21,12 +21,12 @@ function clearStorage() {
 
 var display;
 async function main() {
+    display = document.getElementById("display");
     if (localStorage.stConfig) {
         config = JSON.parse(localStorage.stConfig);
         renderStopwatches();
     }
     doAccessCheck();
-    display = document.getElementById("display");
     config = await retrieveConfig();
     if (typeof config.tracked === "undefined") config.tracked = -1;
     if (location.hash == "#start") {
