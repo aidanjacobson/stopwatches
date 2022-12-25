@@ -6,6 +6,7 @@ function saveConfig() {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(JSON.stringify({state: JSON.stringify(config)}));
     renderStopwatches();
+    localStorage.stConfig = JSON.stringify(config);
 }
 
 function promptForPassword() {

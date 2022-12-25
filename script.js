@@ -11,6 +11,10 @@ var config = {
     tracked: -1
 };
 
+if (localStorage.stConfig) {
+    config = JSON.parse(localStorage.stConfig);
+}
+
 /*function retrieveConfig() {
     config = JSON.parse(localStorage.getItem("config"));
 }*/
