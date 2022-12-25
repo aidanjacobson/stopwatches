@@ -13,6 +13,7 @@ var config = {
 
 if (localStorage.stConfig) {
     config = JSON.parse(localStorage.stConfig);
+    renderStopwatches();
 }
 
 /*function retrieveConfig() {
