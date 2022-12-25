@@ -26,6 +26,7 @@ async function main() {
         config = JSON.parse(localStorage.stConfig);
         renderStopwatches();
     }
+    setInterval(updateStopwatches, 50);
     doAccessCheck();
     config = await retrieveConfig();
     if (typeof config.tracked === "undefined") config.tracked = -1;
@@ -35,7 +36,6 @@ async function main() {
     } else {
         renderStopwatches();
     }
-    setInterval(updateStopwatches, 50);
 }
 
 window.addEventListener("load", main);
