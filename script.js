@@ -11,11 +11,6 @@ var config = {
     tracked: -1
 };
 
-if (localStorage.stConfig) {
-    config = JSON.parse(localStorage.stConfig);
-    renderStopwatches();
-}
-
 /*function retrieveConfig() {
     config = JSON.parse(localStorage.getItem("config"));
 }*/
@@ -26,6 +21,10 @@ function clearStorage() {
 
 var display;
 async function main() {
+    if (localStorage.stConfig) {
+        config = JSON.parse(localStorage.stConfig);
+        renderStopwatches();
+    }
     doAccessCheck();
     display = document.getElementById("display");
     config = await retrieveConfig();
