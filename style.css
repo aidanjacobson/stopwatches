@@ -50,3 +50,8 @@ body {
     height: 50px;
     accent-color: blue;
 }
+
+#advert {
+    margin-top: 100px;
+    margin-left: 100px;
+}
