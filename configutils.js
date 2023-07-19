@@ -14,8 +14,11 @@ function promptForPassword() {
     location.reload();
 }
 
+var local = false;
 function doAccessCheck() {
-    if (localStorage.dkey) {
+    if (localStorage.dkey == "") {
+        local = true;
+    } else if (localStorage.dkey) {
         access_token = CryptoJS.AES.decrypt(encrypted_access_token, localStorage.dkey).toString(CryptoJS.enc.Utf8);
         if (access_token == "") {
             promptForPassword();
