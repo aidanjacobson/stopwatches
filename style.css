@@ -34,6 +34,7 @@ body {
 #display {
     position: absolute;
     top: 550px;
+    padding-bottom: 628px;
 }
 
 .labelBtn {
@@ -55,5 +56,5 @@ body {
     left: 125px;
     z-index: 100;
     position: absolute;
-    bottom: -628px;
+    bottom: 0px;
 }
