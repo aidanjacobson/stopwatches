@@ -32,15 +32,19 @@ var encrypted_access_token = "U2FsdGVkX1+BS7W57qcuksbGeOhMELdKhPGdFruceXcLa74zje
 var access_token = "";
 
 function retrieveConfig() {
-    return new Promise(function(resolve) {
-        var url = `https://aidanjacobson.duckdns.org:8123/api/states/input_text.stopwatch_json`;
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Authorization", `Bearer ${access_token}`);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = function() {
-            resolve(JSON.parse(JSON.parse(xhr.responseText).state));
-        }
-        xhr.send();
-    })
+    if (local) {
+        return JSON.parse(localStorage.stConfig);
+    } else {
+        return new Promise(function(resolve) {
+            var url = `https://aidanjacobson.duckdns.org:8123/api/states/input_text.stopwatch_json`;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url);
+            xhr.setRequestHeader("Authorization", `Bearer ${access_token}`);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onload = function() {
+                resolve(JSON.parse(JSON.parse(xhr.responseText).state));
+            }
+            xhr.send();
+        });
+    }
 }
