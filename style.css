@@ -55,6 +55,6 @@ body {
 #advert {
     left: 125px;
     z-index: 100;
-    position: absolute;
+    position: relative;
     bottom: 0px;
 }
