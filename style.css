@@ -31,7 +31,7 @@ body {
     padding: 100px 0px;
 }
 
-#display {
+#displayContainer {
     position: absolute;
     top: 550px;
     padding-bottom: 628px;
