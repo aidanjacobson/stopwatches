@@ -1,4 +1,4 @@
-function saveConfig() {
+/*function saveConfig() {
     var url = `https://aidanjacobson.duckdns.org:8123/api/states/input_text.stopwatch_json`;
     var xhr = new XMLHttpRequest();
     xhr.open("POST", url);
@@ -8,6 +8,12 @@ function saveConfig() {
     renderStopwatches();
     localStorage.stConfig = JSON.stringify(config);
 }
+*/
+
+async function saveConfig() {
+    server.config = config;
+    await server.uploadConfig();
+}
 
 function promptForPassword() {
     localStorage.dkey = prompt("Please Enter Decryption Key");
@@ -15,12 +21,15 @@ function promptForPassword() {
 }
 
 var local = false;
-function doAccessCheck() {
+var server;
+var store = "stopwatches";
+async function doAccessCheck() {
     if (localStorage.dkey == "") {
         local = true;
     } else if (localStorage.dkey) {
-        access_token = CryptoJS.AES.decrypt(encrypted_access_token, localStorage.dkey).toString(CryptoJS.enc.Utf8);
-        if (access_token == "") {
+        //access_token = CryptoJS.AES.decrypt(encrypted_access_token, localStorage.dkey).toString(CryptoJS.enc.Utf8);
+        server = new ConfigLoader({store: store, securityKey: localStorage.dkey});
+        if (!(await server.validate)) {
             promptForPassword();
         }
     } else {
@@ -31,7 +40,7 @@ function doAccessCheck() {
 var encrypted_access_token = "U2FsdGVkX1+BS7W57qcuksbGeOhMELdKhPGdFruceXcLa74zjeuaGq1ELrfEpq+GjaeCRQiAA2OaUJY0rfXil0NB/VlMeqHNTxo69hBYu3eQcGHhKSrQGY0hn6obMS3w5nagv1Q+kM6OcoRjewNBgAvEK97AcVapxiusHjPlbpUEfllwb5TgiznJouFPYaUj3hwKq6Km3vVy+cbTIoZxMryMuEPXcvAybrhwrJtsidyWy0Z7VWyDg949CULWnaseJtPR+EGMaOtAP5tXwmmV6A==";
 var access_token = "";
 
-function retrieveConfig() {
+/*function retrieveConfig() {
     if (local) {
         return JSON.parse(localStorage.stConfig);
     } else {
@@ -47,4 +56,9 @@ function retrieveConfig() {
             xhr.send();
         });
     }
+}*/
+
+async function retrieveConfig() {
+    config = await server.downloadConfig();
+    return config;
 }

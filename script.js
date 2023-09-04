@@ -27,7 +27,7 @@ async function main() {
         renderStopwatches();
     }
     setInterval(updateStopwatches, 50);
-    doAccessCheck();
+    await doAccessCheck();
     config = await retrieveConfig();
     if (typeof config.tracked === "undefined") config.tracked = -1;
     if (location.hash == "#start") {
@@ -51,6 +51,7 @@ function startNewStopwatch() {
     });
     if (config.watches.length == 1) config.tracked = 0;
     saveConfig();
+    renderStopwatches();
     window.scrollTo(0, document.body.scrollHeight)
 }
 
@@ -100,6 +101,7 @@ function deleteWatch(i) {
     if (i < config.tracked) config.tracked--;
     if (config.watches.length == 0) config.tracked = -1;
     saveConfig();
+    renderStopwatches();
 }
 
 function setTime(i) {
