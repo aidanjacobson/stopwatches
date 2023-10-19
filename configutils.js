@@ -32,7 +32,7 @@ async function doAccessCheck() {
         if (!(await server.validate)) {
             promptForPassword();
         }
-        advert.src = "https://aidanjacobson.duckdns.org:7777/advertisement/random";
+        if (location.hash != "#demo") advert.src = "https://aidanjacobson.duckdns.org:7777/advertisement/random";
     } else {
         promptForPassword();
     }
