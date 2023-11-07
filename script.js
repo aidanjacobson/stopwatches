@@ -11,10 +11,6 @@ var config = {
     tracked: -1
 };
 
-/*function retrieveConfig() {
-    config = JSON.parse(localStorage.getItem("config"));
-}*/
-
 function clearStorage() {
     localStorage.clear();
 }
@@ -37,11 +33,11 @@ async function main() {
         renderStopwatches();
     }
 }
-
 window.addEventListener("load", main);
 
+// start a new stopwatch with no label
 function startNewStopwatch() {
-    if (getSelection().toString() != '') {
+    if (getSelection().toString() != '') { // check if any text on the screen is highlighted, which is the secret code to process an admin command instead
         processAdminCommand();
         return;
     }
@@ -55,6 +51,7 @@ function startNewStopwatch() {
     window.scrollTo(0, document.body.scrollHeight)
 }
 
+// populate window with stopwatches according to config
 function renderStopwatches() {
     display.innerHTML = "";
     for (var i = 0; i < config.watches.length; i++) {
@@ -67,6 +64,7 @@ function renderStopwatches() {
     }
 }
 
+// update times on existing stopwatches
 function updateStopwatches() {
     var els = Array.from(display.children);
     els.forEach(function(el, i) {
@@ -78,6 +76,7 @@ function updateStopwatches() {
     });
 }
 
+// format time in h:mm:ss format
 function formatTime(timestamp) {
     var timeDiff = Date.now() - timestamp;
     var hours = Math.floor(timeDiff/1000/60/60);
@@ -88,12 +87,14 @@ function formatTime(timestamp) {
     return `${hours}:${minutes.toString().padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`;
 }
 
+// set label for stopwatch by index
 function addLabel(i) {
     var input = prompt("Enter Label", config.watches[i].label || "");
     config.watches[i].label = input;
     saveConfig();
 }
 
+// delete stopwatch by index
 function deleteWatch(i) {
     if (!confirm(`Are you sure you want to delete stopwatch ${config.watches[i].label}?`)) return;
     config.watches.splice(i, 1);
@@ -104,6 +105,7 @@ function deleteWatch(i) {
     renderStopwatches();
 }
 
+// set new time by index
 function setTime(i) {
     var input = prompt("Enter time in form h:mm:ss", formatTime(config.watches[i].timestamp));
     if (!input) return;
@@ -113,6 +115,7 @@ function setTime(i) {
     saveConfig();
 }
 
+// update index of selected stopwatch to track (display on my home screen)
 function updateTracked() {
     if (document.querySelector("input[name='tracked']:checked")) {
         config.tracked = +document.querySelector("input[name='tracked']:checked").value
@@ -122,10 +125,28 @@ function updateTracked() {
     saveConfig();
 }
 
+/*
+    Admin commands are a series of letters and arguments, to achieve things that are not strictly
+    necessary for operation but still helpful tools to have.
+    Commands:
+        r: reorder
+            rm: move (example: rm1,3 => insert position 1 to position 3)
+            rs: swap (example: rs1,3 => swap positions 1 and 3)
+        d: deselect tracked stopwatch
+        l: logout (clears login data)
+*/
+function processAdminCommand() {
+    var cmd = prompt("Enter Command");
+    if (cmd[0] == "r") reorder(cmd.substring(1));
+    if (cmd[0] == "d") deselect();
+    if (cmd[0] == "l") logout();
+}
+
+// reorder two stopwatches (move or swap)
 function reorder(reorderCode) {
     /*
-        m1,3 => moves 1 to 3 position (shift)
-        s1,3 => swaps 1 and 3 position
+        rm1,3 => moves 1 to 3 position (shift)
+        rs1,3 => swaps 1 and 3 position
     */
     var reorderLetter = reorderCode[0];
     var arg1 = +reorderCode.substring(1, reorderCode.indexOf(","));
@@ -151,18 +172,13 @@ function reorder(reorderCode) {
     saveConfig();
 }
 
-function processAdminCommand() {
-    var cmd = prompt("Enter Command");
-    if (cmd[0] == "r") reorder(cmd.substring(1));
-    if (cmd[0] == "d") deselect();
-    if (cmd[0] == "l") logout();
-}
-
+// deselect tracked stopwatch
 function deselect() {
     document.querySelector("input[name='tracked']:checked").checked = false;
     updateTracked();
 }
 
+// clear credentials
 function logout() {
     localStorage.removeItem("dkey");
     location.reload();
