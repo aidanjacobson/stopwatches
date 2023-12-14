@@ -8,7 +8,15 @@
 var config = {
     saved: true,
     watches: [],
-    tracked: -1
+    tracked: -1,
+    settings: {
+        autoclear: {
+            enabled: false,
+            time: 18000
+        },
+        reload_minutes: 3
+    },
+    hash: ""
 };
 
 function clearStorage() {
@@ -16,6 +24,8 @@ function clearStorage() {
 }
 
 var display;
+var lastReload;
+var lastHash = "";
 async function main() {
     display = document.getElementById("display");
     if (localStorage.stConfig) {
@@ -25,6 +35,7 @@ async function main() {
     setInterval(updateStopwatches, 50);
     await doAccessCheck();
     config = await retrieveConfig();
+    setSettingsFromConfig();
     if (typeof config.tracked === "undefined") config.tracked = -1;
     if (location.hash == "#start") {
         location.hash = "";
@@ -32,8 +43,13 @@ async function main() {
     } else {
         renderStopwatches();
     }
+    lastReload = Date.now();
+    lastHash = config.hash;
 }
-window.addEventListener("load", main);
+window.addEventListener("load", function() {
+    switchTo(mainwindow);
+    main();
+});
 
 // start a new stopwatch with no label
 function startNewStopwatch() {
@@ -66,8 +82,10 @@ function renderStopwatches() {
 
 // update times on existing stopwatches
 function updateStopwatches() {
+    doReloadCheck();
     var els = Array.from(display.children);
     els.forEach(function(el, i) {
+        if (!config.watches[i]) return;
         el.children[0].innerText = formatTime(config.watches[i].timestamp);
         if (config.watches[i].label != "") {
             el.children[2].children[0].innerHTML = config.watches[i].label;
@@ -182,4 +200,69 @@ function deselect() {
 function logout() {
     localStorage.removeItem("dkey");
     location.reload();
+}
+
+HTMLElement.prototype.show = function() {
+    this.removeAttribute("hidden");
+}
+
+HTMLElement.prototype.hide = function() {
+    this.setAttribute("hidden", "true");
+}
+
+function hideAll() {
+    var elements = document.getElementsByClassName("hideable");
+    Array.from(elements).forEach(element=>element.hide());
+}
+
+function switchTo(element) {
+    hideAll();
+    element.show();
+}
+
+function settingsClick() {
+    switchTo(settings);
+}
+
+function setSettingsFromConfig() {
+    autoclear_check.checked = config.settings.autoclear.enabled;
+    autoclear_time.disabled = !autoclear_check.checked;
+    autoclear_time.value = convertSecondsToTimestring(config.settings.autoclear.time);
+
+    reload_minutes_input.value = config.settings.reload_minutes*60;
+}
+
+async function doAutoclearChange() {
+    config.settings.autoclear.enabled = autoclear_check.checked;
+    autoclear_time.disabled = !autoclear_check.checked;
+    config.settings.autoclear.time = convertTimestringToSeconds(autoclear_time.value);
+    await saveConfig();
+}
+
+async function doReloadTimeChange() {
+    config.settings.reload_minutes = (+reload_minutes_input.value)/60;
+    await saveConfig();
+}
+
+function convertTimestringToSeconds(timestring) {
+    var parts = timestring.split(":");
+    var hours = +parts[0];
+    var minutes = +parts[1];
+    return (hours*60+minutes)*60;
+}
+
+function convertSecondsToTimestring(seconds) {
+    var hours = Math.floor(seconds/60/60);
+    var minutes = Math.floor((seconds-hours*60*60)/60);
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+}
+
+async function doReloadCheck() {
+    var current = Date.now();
+    var delay = config.settings.reload_minutes*60*1000;
+    if (current > lastReload + delay) {
+        lastReload = current;
+        await retrieveConfig();
+        if (config.hash != lastHash) main();
+    }
 }

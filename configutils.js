@@ -1,5 +1,7 @@
 // upload config to server
 async function saveConfig() {
+    config.hash = generateHash();
+    lastHash = config.hash
     server.config = config;
     await server.uploadConfig();
 }
@@ -35,4 +37,8 @@ var access_token = "";
 async function retrieveConfig() {
     config = await server.downloadConfig();
     return config;
+}
+
+function generateHash() {
+    return CryptoJS.MD5(JSON.stringify(config)).toString();
 }
