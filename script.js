@@ -5,7 +5,7 @@
     }
 */
 
-var config = {
+var default_config = {
     saved: true,
     watches: [],
     tracked: -1,
@@ -18,6 +18,8 @@ var config = {
     },
     hash: ""
 };
+
+config = default_config;
 
 function clearStorage() {
     localStorage.clear();
