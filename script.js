@@ -288,6 +288,7 @@ function convertSecondsToTimestring(seconds) {
 }
 
 async function doReloadCheck() {
+    if (typeof config.settings.reload_minutes === "undefined") return;
     var current = Date.now();
     var delay = config.settings.reload_minutes*60*1000;
     if (current > lastReload + delay) {
