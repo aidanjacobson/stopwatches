@@ -77,8 +77,8 @@ async function main() {
 }
 window.addEventListener("load", async function() {
     switchTo(mainwindow);
+    await main();
     await correctConfig();
-    main();
 });
 
 // start a new stopwatch with no label
