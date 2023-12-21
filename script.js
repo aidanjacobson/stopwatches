@@ -64,7 +64,6 @@ async function main() {
     setInterval(updateStopwatches, 50);
     await doAccessCheck();
     config = await retrieveConfig();
-    await correctConfig();
     setSettingsFromConfig();
     if (typeof config.tracked === "undefined") config.tracked = -1;
     if (location.hash == "#start") {
@@ -76,8 +75,9 @@ async function main() {
     lastReload = Date.now();
     lastHash = config.hash;
 }
-window.addEventListener("load", function() {
+window.addEventListener("load", async function() {
     switchTo(mainwindow);
+    await correctConfig();
     main();
 });
 
