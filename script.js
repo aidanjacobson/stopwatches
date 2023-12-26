@@ -19,17 +19,16 @@
     }
 */
 
-async function correctConfig() {
+function correctConfig() {
     if (typeof config.saved === "undefined") config.saved = true;
     if (typeof config.watches === "undefined") config.watches = [];
     if (typeof config.tracked === "undefined") config.tracked = -1;
     if (typeof config.settings === "undefined") config.settings = {};
-    if (typeof config.settings.reload_minutes === "undefined") config.settings.reload_minutes = 3;
+    if (typeof config.settings.reload_minutes === "undefined") config.settings.reload_minutes = 2/60;
     if (typeof config.settings.autoclear === "undefined") config.settings.autoclear = {};
     if (typeof config.settings.autoclear.enabled === "undefined") config.settings.autoclear.enabled = false;
     if (typeof config.settings.autoclear.time === "undefined") config.settings.autoclear.time = 18000;
     if (typeof config.hash === "undefined") config.hash = "";
-    await saveConfig();
 }
 
 var default_config = {
@@ -41,7 +40,7 @@ var default_config = {
             enabled: false,
             time: 18000
         },
-        reload_minutes: 3
+        reload_minutes: 2/60
     },
     hash: ""
 };
@@ -64,6 +63,7 @@ async function main() {
     setInterval(updateStopwatches, 50);
     await doAccessCheck();
     config = await retrieveConfig();
+    correctConfig();
     setSettingsFromConfig();
     if (typeof config.tracked === "undefined") config.tracked = -1;
     if (location.hash == "#start") {
@@ -78,7 +78,6 @@ async function main() {
 window.addEventListener("load", async function() {
     switchTo(mainwindow);
     await main();
-    await correctConfig();
 });
 
 // start a new stopwatch with no label
