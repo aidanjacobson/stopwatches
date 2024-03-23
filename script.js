@@ -37,7 +37,7 @@ var default_config = {
     tracked: -1,
     settings: {
         autoclear: {
-            enabled: false,
+            enabled: true,
             time: 18000
         },
         reload_minutes: 2/60
