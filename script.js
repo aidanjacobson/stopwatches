@@ -254,6 +254,7 @@ function settingsClick() {
 }
 
 function setSettingsFromConfig() {
+    ensureSettings();
     autoclear_check.checked = config.settings.autoclear.enabled;
     autoclear_time.disabled = !autoclear_check.checked;
     autoclear_time.value = convertSecondsToTimestring(config.settings.autoclear.time);
@@ -261,7 +262,16 @@ function setSettingsFromConfig() {
     reload_minutes_input.value = config.settings.reload_minutes*60;
 }
 
+function ensureSettings() {
+    if (! (config.settings instanceof Object)) config.settings = {autoclear: {enabled: true, time: convertTimestringToSeconds("5:00")}, reload_minutes: 2/60};
+    if (! (config.settings.autoclear instanceof Object)) config.settings.autoclear = {enabled: true, time: convertTimestringToSeconds("5:00")};
+    if (typeof config.settings.autoclear.enabled === "undefined") config.settings.autoclear.enabled = true;
+    if (typeof config.settings.autoclear.time === "undefined") config.settings.autoclear.time = convertTimestringToSeconds("5:00");
+    if (typeof config.settings.reload_minutes === "undefined") config.settings.reload_minutes = 2/60;
+}
+
 async function doAutoclearChange() {
+    ensureSettings();
     config.settings.autoclear.enabled = autoclear_check.checked;
     autoclear_time.disabled = !autoclear_check.checked;
     config.settings.autoclear.time = convertTimestringToSeconds(autoclear_time.value);
@@ -269,6 +279,7 @@ async function doAutoclearChange() {
 }
 
 async function doReloadTimeChange() {
+    ensureSettings();
     config.settings.reload_minutes = (+reload_minutes_input.value)/60;
     await saveConfig();
 }
