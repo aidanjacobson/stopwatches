@@ -23,11 +23,12 @@ function correctConfig() {
     if (typeof config.saved === "undefined") config.saved = true;
     if (typeof config.watches === "undefined") config.watches = [];
     if (typeof config.tracked === "undefined") config.tracked = -1;
-    if (typeof config.settings === "undefined") config.settings = {};
-    if (typeof config.settings.reload_minutes === "undefined") config.settings.reload_minutes = 2/60;
-    if (typeof config.settings.autoclear === "undefined") config.settings.autoclear = {};
-    if (typeof config.settings.autoclear.enabled === "undefined") config.settings.autoclear.enabled = false;
-    if (typeof config.settings.autoclear.time === "undefined") config.settings.autoclear.time = 18000;
+    // if (typeof config.settings === "undefined") config.settings = {};
+    // if (typeof config.settings.reload_minutes === "undefined") config.settings.reload_minutes = 2/60;
+    // if (typeof config.settings.autoclear === "undefined") config.settings.autoclear = {};
+    // if (typeof config.settings.autoclear.enabled === "undefined") config.settings.autoclear.enabled = false;
+    // if (typeof config.settings.autoclear.time === "undefined") config.settings.autoclear.time = 18000;
+    ensureSettings();
     if (typeof config.hash === "undefined") config.hash = "";
 }
 
@@ -298,6 +299,7 @@ function convertSecondsToTimestring(seconds) {
 }
 
 async function doReloadCheck() {
+    ensureSettings();
     if (typeof config.settings.reload_minutes === "undefined") return;
     var current = Date.now();
     var delay = config.settings.reload_minutes*60*1000;
